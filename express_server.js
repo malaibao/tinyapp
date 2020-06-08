@@ -17,9 +17,12 @@ app.get('/', (req, res) => {
 });
 
 app.get('/urls', (req, res) => {
-  //   let templateVars = { urls: urlDatabase };
-  let templateVars = { greeting: 'Hello World!' };
+  let templateVars = { urls: urlDatabase };
+  res.render('urls_index', templateVars);
+});
 
+app.get('/urls/:shortURL', (req, res) => {
+  let templateVars = { url: urlDatabase[req.params.shortURL] };
   res.render('urls_index', templateVars);
 });
 
