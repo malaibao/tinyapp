@@ -32,7 +32,6 @@ app.get('/urls/:shortURL', (req, res) => {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
   };
-  console.log(templateVars.longURL);
   if (templateVars.longURL) {
     res.render('urls_show', templateVars);
   } else {
