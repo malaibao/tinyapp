@@ -7,7 +7,8 @@ const PORT = 8080; // default port 8080
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true }));
+
 const urlDatabase = {
   b2xVn2: 'http://www.youtube.com',
   '9sm5xK': 'http://www.google.com',
@@ -28,22 +29,29 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
-  res.render("urls_show", templateVars);
+  console.log(templateVars.longURL)
+  if (templateVars.longURL) {
+    res.render("urls_show", templateVars);
+  } else {
+    res.send('Error 404. Page not found.');
+
+  }
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);
-  res.send("Ok");
+  const longURL = req.body.longURL;
+  const shortURL = generateRandomString();
+  urlDatabase[shortURL] = longURL;
+
+  res.redirect(`/urls/${shortURL}`);
 });
-
-
 
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 });
 
-app.get('/hello', (req, res) => {
-  res.send('<html><body>Hello <b>World</b></body></html>\n');
+app.get('*', (req, res) => {
+  res.send('Error 404. Page not found.')
 });
 
 app.listen(PORT, () => {
