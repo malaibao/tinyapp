@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/malaibao/tinyapp/issues"
   },
-  "homepage": "https://github.com/malaibao/tinyapp#readme"
+  "homepage": "https://github.com/malaibao/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
