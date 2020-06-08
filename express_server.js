@@ -49,3 +49,17 @@ app.get('/hello', (req, res) => {
 app.listen(PORT, () => {
   console.log(`tinyapp app listening on port ${PORT}!`);
 });
+
+function generateRandomString() {
+  const numbers = '1234567890';
+  const alphabets = 'abcdefghijklmnopqrstuvwxyz';
+  const alphaNumeric = numbers.concat(alphabets);
+
+  let randStr = '';
+
+  for (let i = 0; i < 6; i++) {
+    let randNum = Math.floor(Math.random() * alphaNumeric.length);
+    randStr += alphaNumeric[randNum];
+  }
+  return randStr;
+}
