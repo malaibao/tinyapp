@@ -6,7 +6,8 @@ const PORT = 8080; // default port 8080
 // Config
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
-
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }))
 const urlDatabase = {
   b2xVn2: 'http://www.youtube.com',
   '9sm5xK': 'http://www.google.com',
@@ -30,6 +31,11 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+app.post("/urls", (req, res) => {
+  console.log(req.body);
+  res.send("Ok");
+});
+
 
 
 app.get('/urls.json', (req, res) => {
@@ -41,5 +47,5 @@ app.get('/hello', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`tinyapp app listening on port ${PORT}!`);
 });
