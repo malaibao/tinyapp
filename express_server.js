@@ -46,12 +46,13 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
-app.get('/urls.json', (req, res) => {
-  res.json(urlDatabase);
+app.get("/u/:shortURL", (req, res) => {
+  const longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
 });
 
 app.get('*', (req, res) => {
-  res.send('Error 404. Page not found.')
+  res.send('Error 404. Page not found.');
 });
 
 app.listen(PORT, () => {
