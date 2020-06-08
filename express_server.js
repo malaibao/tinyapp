@@ -8,7 +8,7 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
 const urlDatabase = {
-  b2xVn2: 'http://www.lighthouselabs.ca',
+  b2xVn2: 'http://www.youtube.com',
   '9sm5xK': 'http://www.google.com',
 };
 
