@@ -4,6 +4,7 @@ const app = express();
 const PORT = 8080; // default port 8080
 
 // Config
+app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
 const urlDatabase = {
@@ -13,6 +14,13 @@ const urlDatabase = {
 
 app.get('/', (req, res) => {
   res.send('Hello!');
+});
+
+app.get('/urls', (req, res) => {
+  //   let templateVars = { urls: urlDatabase };
+  let templateVars = { greeting: 'Hello World!' };
+
+  res.render('urls_index', templateVars);
 });
 
 app.get('/urls.json', (req, res) => {
