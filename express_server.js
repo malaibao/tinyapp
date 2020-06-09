@@ -1,8 +1,12 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 const PORT = 8080;
+
+// import data
+const { urlDatabase, users } = require('./storeData/seedData');
 
 // Config
 app.set('views', __dirname + '/views');
@@ -10,11 +14,6 @@ app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-
-const urlDatabase = {
-  b2xVn2: 'http://www.youtube.com',
-  '9sm5xK': 'http://www.google.com',
-};
 
 /* HOMEPAGE */
 app.get('/', (req, res) => {
