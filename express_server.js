@@ -36,14 +36,35 @@ app.post('/logout', (req, res) => {
   res.redirect('/urls');
 })
 
+/* GET register form */
 app.get('/register', (req, res) => {
-  res.render('register', { username: null });
+  res.render('register', { username: req.cookies.username });
 })
+
+/* REGISTER */
+app.post('/register', (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const id = uuidv4();
+
+  users[id] = {
+    id,
+    email,
+    password
+  }
+
+  // set cookie
+  const option = {
+    expires: new Date(Date.now() + 8 * 3600000)
+  }
+  res.cookie('username', email, option);
+  res.redirect('/urls');
+})
+
 
 /* GET all URLS */
 app.get('/urls', (req, res) => {
   let templateVars = { urls: urlDatabase, username: req.cookies.username };
-  // let templateVars = { urls: urlDatabase };
   res.render('urls_index', templateVars);
 });
 
