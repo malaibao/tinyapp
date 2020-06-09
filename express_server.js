@@ -22,23 +22,35 @@ app.get('/', (req, res) => {
 
 /* LOGIN */
 app.post('/login', (req, res) => {
-  const option = {
-    expires: new Date(Date.now() + 8 * 3600000)
+  let foundUser;
+
+  for (let [id, userInfo] of Object.entries(users)) {
+    if (req.body.email === userInfo.email) {
+      foundUser = userInfo;
+      break;
+    }
   }
-  // set cookie
-  res.cookie('username', req.body.username, option);
-  res.redirect('/urls');
+  if (foundUser) {
+    const option = {
+      expires: new Date(Date.now() + 8 * 3600000)
+    }
+    // set cookie
+    res.cookie('user_id', foundUser.id, option);
+    res.redirect('/urls');
+  } else {
+    res.send('no user found');
+  }
 })
 
 /* LOGOUT */
 app.post('/logout', (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect('/urls');
 })
 
 /* GET register form */
 app.get('/register', (req, res) => {
-  res.render('register', { username: req.cookies.username });
+  res.render('register', { user: users[req.cookies.user_id] });
 })
 
 /* REGISTER */
@@ -52,19 +64,18 @@ app.post('/register', (req, res) => {
     email,
     password
   }
-
   // set cookie
   const option = {
     expires: new Date(Date.now() + 8 * 3600000)
   }
-  res.cookie('username', email, option);
+  res.cookie('user_id', id, option);
   res.redirect('/urls');
 })
 
 
 /* GET all URLS */
 app.get('/urls', (req, res) => {
-  let templateVars = { urls: urlDatabase, username: req.cookies.username };
+  let templateVars = { urls: urlDatabase, user: users[req.cookies.user_id] };
   res.render('urls_index', templateVars);
 });
 
@@ -79,7 +90,7 @@ app.post('/urls', (req, res) => {
 
 /* GET URL creating form */
 app.get('/urls/new', (req, res) => {
-  res.render('urls_new', { username: req.cookies.username });
+  res.render('urls_new', { user: users[req.cookies.user_id] });
 });
 
 /* GET single URL by shortURL */
@@ -87,7 +98,7 @@ app.get('/urls/:shortURL', (req, res) => {
   let templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
-    username: req.cookies.username
+    user: users[req.cookies.user_id]
   };
   if (templateVars.longURL) {
     res.render('urls_show', templateVars);
