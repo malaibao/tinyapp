@@ -31,9 +31,16 @@ app.post('/login', (req, res) => {
   res.redirect('/urls');
 })
 
+/* LOGOUT */
+app.post('/logout', (req, res) => {
+  res.clearCookie('username');
+  res.redirect('/urls');
+})
+
 /* GET all URLS */
 app.get('/urls', (req, res) => {
   let templateVars = { urls: urlDatabase, username: req.cookies.username };
+  // let templateVars = { urls: urlDatabase };
   res.render('urls_index', templateVars);
 });
 
