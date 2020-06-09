@@ -14,19 +14,32 @@ const urlDatabase = {
   '9sm5xK': 'http://www.google.com',
 };
 
+/* HOMEPAGE */
 app.get('/', (req, res) => {
   res.send('Hello!');
 });
 
+/* GET all URLS */
 app.get('/urls', (req, res) => {
   let templateVars = { urls: urlDatabase };
   res.render('urls_index', templateVars);
 });
 
+/* POST(CREATE) new URL */
+app.post('/urls', (req, res) => {
+  const longURL = req.body.longURL;
+  const shortURL = generateRandomString();
+  urlDatabase[shortURL] = longURL;
+
+  res.redirect(`/urls/${shortURL}`);
+});
+
+/* GET URL creating form */
 app.get('/urls/new', (req, res) => {
   res.render('urls_new');
 });
 
+/* GET single URL by shortURL */
 app.get('/urls/:shortURL', (req, res) => {
   let templateVars = {
     shortURL: req.params.shortURL,
@@ -39,6 +52,7 @@ app.get('/urls/:shortURL', (req, res) => {
   }
 });
 
+/* GET shortURL and REDIRECT  */
 app.get('/u/:shortURL', (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   if (urlDatabase[req.params.shortURL]) {
@@ -49,20 +63,14 @@ app.get('/u/:shortURL', (req, res) => {
   }
 });
 
-app.post('/urls', (req, res) => {
-  const longURL = req.body.longURL;
-  const shortURL = generateRandomString();
-  urlDatabase[shortURL] = longURL;
-
-  res.redirect(`/urls/${shortURL}`);
-});
-
+/* UPDATE(POST) URL */
 app.post('/urls/:shortURL', (req, res) => {
   const longURL = req.body.longURL;
   urlDatabase[req.params.shortURL] = longURL;
   res.redirect(`/urls/${req.params.shortURL}`);
 })
 
+/* DELETE(POST) url */
 app.post('/urls/:shortURL/delete', (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect('/urls');
