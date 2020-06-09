@@ -37,6 +37,10 @@ app.post('/logout', (req, res) => {
   res.redirect('/urls');
 })
 
+app.get('/register', (req, res) => {
+  res.render('register', { username: null });
+})
+
 /* GET all URLS */
 app.get('/urls', (req, res) => {
   let templateVars = { urls: urlDatabase, username: req.cookies.username };
@@ -55,7 +59,7 @@ app.post('/urls', (req, res) => {
 
 /* GET URL creating form */
 app.get('/urls/new', (req, res) => {
-  res.render('urls_new');
+  res.render('urls_new', { username: req.cookies.username });
 });
 
 /* GET single URL by shortURL */
@@ -63,6 +67,7 @@ app.get('/urls/:shortURL', (req, res) => {
   let templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
+    username: req.cookies.username
   };
   if (templateVars.longURL) {
     res.render('urls_show', templateVars);
@@ -105,7 +110,7 @@ app.listen(PORT, () => {
 
 function generateRandomString() {
   const numbers = '1234567890';
-  const alphabets = 'abcdefghijklmnopqrstuvwxyz';
+  const alphabets = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const alphaNumeric = numbers.concat(alphabets);
 
   let randStr = '';
