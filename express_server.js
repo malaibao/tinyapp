@@ -1,13 +1,15 @@
 const express = require('express');
-const app = express();
+const cookieParser = require('cookie-parser');
 
-const PORT = 8080; // default port 8080
+const app = express();
+const PORT = 8080;
 
 // Config
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 const urlDatabase = {
   b2xVn2: 'http://www.youtube.com',
@@ -19,9 +21,19 @@ app.get('/', (req, res) => {
   res.send('Hello!');
 });
 
+/* LOGIN */
+app.post('/login', (req, res) => {
+  const option = {
+    expires: new Date(Date.now() + 8 * 3600000)
+  }
+  // set cookie
+  res.cookie('username', req.body.username, option);
+  res.redirect('/urls');
+})
+
 /* GET all URLS */
 app.get('/urls', (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = { urls: urlDatabase, username: req.cookies.username };
   res.render('urls_index', templateVars);
 });
 
