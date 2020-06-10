@@ -13,6 +13,9 @@
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
     integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/custom.css">
   <header>
     <nav class="navbar navbar-expand-lg navbar-dark" style='background-color: #48778F; '>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01"
@@ -38,11 +41,14 @@
           <button class="btn btn-info my-2 my-sm-0" type="submit">Log Out</button>
         </form>
         <% }else{ %>
-        <form class="form-inline my-2 my-lg-0" action='/login' method='POST'>
+        <a class="nav-link form-link" href="/register">Register</a>
+        <a class="nav-link form-link" href="/login">Login</a>
+
+        <!-- <form class="form-inline my-2 my-lg-0" action='/login' method='POST'>
           <input class="form-control mr-sm-2" type="text" name='email' placeholder="Username">
           <button class="btn btn-info my-2 my-sm-0" type="submit">Log In</button>
         </form>
-        <a href='/register' class='ml-2'><button type="button" class="btn btn-warning">Register</button></a>
+        <a href='/register' class='ml-2'><button type="button" class="btn btn-warning">Register</button></a> -->
         <% } %>
 
       </div>
