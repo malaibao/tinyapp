@@ -5,7 +5,7 @@
 
 <body>
     <main style="margin: 1em;">
-        <h3>My URLs</h3>
+        <h3>URLs</h3>
         <table class="table">
             <thead>
                 <tr>
@@ -16,7 +16,7 @@
             <tbody>
                 <% for(let url in urls) { %>
                 <tr>
-                    <td><%= url %></td>
+                    <td><a href='<%= urls[url].longURL %>'><%= url %></a></td>
                     <td><%= urls[url].longURL %></td>
                 </tr>
                 <% } %>

@@ -29,10 +29,8 @@ function emailLookUp(inputEmail) {
 
 function urlsForUser(id) {
     const urls = {};
-
     for (let [shortURL, url] of Object.entries(urlDatabase)) {
         if (url.userID === id) {
-            console.log('Here YaY!')
             urls[shortURL] = url;
         }
     }
@@ -44,5 +42,5 @@ module.exports = {
     authenticateUser,
     generateRandomString,
     emailLookUp,
-    urlsForUser
+    urlsForUser,
 }

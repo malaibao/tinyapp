@@ -22,7 +22,7 @@ app.use(cookieParser());
 
 /* HOMEPAGE */
 app.get('/', (req, res) => {
-  const templateVars = { urls: urlDatabase, user: users[req.cookies.user_id] };
+  const templateVars = { urls: urlDatabase, user: users[req.cookies.user_id], users };
   res.render('homepage', templateVars);
 });
 
@@ -53,7 +53,7 @@ app.post('/login', (req, res) => {
 /* POST LOGOUT */
 app.post('/logout', (req, res) => {
   res.clearCookie('user_id');
-  res.redirect('/urls');
+  res.redirect('/');
 })
 
 /* GET register form */
@@ -115,38 +115,59 @@ app.get('/urls/new', (req, res) => {
 
 /* GET single URL by shortURL */
 app.get('/urls/:shortURL', (req, res) => {
-  const templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL,
-    user: users[req.cookies.user_id]
-  };
-  if (templateVars.longURL) {
-    res.render('urls_show', templateVars);
-  } else {
-    res.send('Error 404. Page not found.');
+  const shortURL = req.params.shortURL;
+  const userId = req.cookies.user_id;
+
+  // if no shortURL
+  if (!urlDatabase[shortURL]) {
+    res.status(404).send('Error 404. Page not found.');
   }
+
+  if (userId === urlDatabase[shortURL].userID) {
+    const templateVars = {
+      shortURL: req.params.shortURL,
+      longURL: urlDatabase[shortURL].longURL,
+      user: users[req.cookies.user_id]
+    };
+    res.render('urls_show', templateVars);
+  }
+
+  res.status(403).render('page403', { user: users[userId] });
 });
+
+/* UPDATE(POST) URL */
+app.post('/urls/:shortURL', (req, res) => {
+  const shortURL = req.params.shortURL;
+  const userId = req.cookies.user_id;
+
+  if (userId === urlDatabase[shortURL].userID) {
+    const longURL = req.body.longURL;
+    urlDatabase[req.params.shortURL] = longURL;
+    res.redirect(`/urls/${req.params.shortURL}`);
+  }
+  res.status(403).send('[Error 403] Sorry! You do not have permission to update the URL.');
+})
 
 /* GET shortURL and REDIRECT  */
 app.get('/u/:shortURL', (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL].longURL;
-  if (!urlDatabase[req.params.shortURL]) {
+  const shortURL = req.params.shortURL;
+  const longURL = urlDatabase[shortURL].longURL;
+  if (!urlDatabase[shortURL]) {
     res.redirect(longURL);
   }
   res.status(404).send('Error 404. Page not found.');
 });
 
-/* UPDATE(POST) URL */
-app.post('/urls/:shortURL', (req, res) => {
-  const longURL = req.body.longURL;
-  urlDatabase[req.params.shortURL] = longURL;
-  res.redirect(`/urls/${req.params.shortURL}`);
-})
-
 /* DELETE(POST) url */
 app.post('/urls/:shortURL/delete', (req, res) => {
-  delete urlDatabase[req.params.shortURL];
-  res.redirect('/urls');
+  const shortURL = req.params.shortURL;
+  const userId = req.cookies.user_id;
+
+  if (userId === urlDatabase[shortURL].userID) {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect('/urls');
+  }
+  res.status(403).send('[Error 403] Sorry! You do not have permission to delete the URL.');
 })
 
 app.get('/page401', (req, res) => {
@@ -154,7 +175,7 @@ app.get('/page401', (req, res) => {
 })
 
 app.get('*', (req, res) => {
-  res.send('Error 404. Page not found.');
+  res.render('page404', { user: users[req.cookies.user_id] });
 });
 
 app.listen(PORT, () => {
