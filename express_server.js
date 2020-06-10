@@ -28,7 +28,7 @@ app.get('/login', (req, res) => {
 
 /* POST LOGIN */
 app.post('/login', (req, res) => {
-  let foundUser = emailLookUp(req.body.email, req.body.password);
+  let foundUser = emailLookUp(req.body.email);
 
   if (foundUser) {
     const option = {
@@ -58,9 +58,7 @@ app.post('/register', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  if (!email || !password || emailLookUp(email, password)) {
-    console.log('shouls not see this');
-    console.log(`${foundUser}`);
+  if (!email || !password || emailLookUp(email)) {
     res.status(400).send('Error 400');
   }
 
@@ -160,7 +158,7 @@ function generateRandomString() {
   return randStr;
 }
 
-function emailLookUp(inputEmail, inputPassword) {
+function emailLookUp(inputEmail) {
   let foundUser;
 
   for (let [id, userInfo] of Object.entries(users)) {
