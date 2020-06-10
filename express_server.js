@@ -10,6 +10,7 @@ const { urlDatabase, users } = require('./storeData/seedData');
 
 // Config
 app.set('views', __dirname + '/views');
+app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -20,7 +21,12 @@ app.get('/', (req, res) => {
   res.send('Hello!');
 });
 
-/* LOGIN */
+/* GET login form */
+app.get('/login', (req, res) => {
+  res.render('login', { user: users[req.cookies.user_id] });
+})
+
+/* POST LOGIN */
 app.post('/login', (req, res) => {
   let foundUser = emailLookUp(req.body.email, req.body.password);
 
@@ -36,7 +42,7 @@ app.post('/login', (req, res) => {
   }
 })
 
-/* LOGOUT */
+/* POST LOGOUT */
 app.post('/logout', (req, res) => {
   res.clearCookie('user_id');
   res.redirect('/urls');
@@ -47,12 +53,14 @@ app.get('/register', (req, res) => {
   res.render('register', { user: users[req.cookies.user_id] });
 })
 
-/* REGISTER */
+/* POST REGISTER */
 app.post('/register', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
   if (!email || !password || emailLookUp(email, password)) {
+    console.log('shouls not see this');
+    console.log(`${foundUser}`);
     res.status(400).send('Error 400');
   }
 
