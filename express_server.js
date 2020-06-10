@@ -89,21 +89,24 @@ app.get('/urls', (req, res) => {
 app.post('/urls', (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[shortURL] = { longURL, userID: req.cookies.user_id };
 
   res.redirect(`/urls/${shortURL}`);
 });
 
 /* GET URL creating form */
 app.get('/urls/new', (req, res) => {
-  res.render('urls_new', { user: users[req.cookies.user_id] });
+  if (req.cookies.user_id) {
+    res.render('urls_new', { user: users[req.cookies.user_id] });
+  }
+  res.redirect('/login');
 });
 
 /* GET single URL by shortURL */
 app.get('/urls/:shortURL', (req, res) => {
   let templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
+    longURL: urlDatabase[req.params.shortURL].longURL,
     user: users[req.cookies.user_id]
   };
   if (templateVars.longURL) {
@@ -115,7 +118,7 @@ app.get('/urls/:shortURL', (req, res) => {
 
 /* GET shortURL and REDIRECT  */
 app.get('/u/:shortURL', (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   if (urlDatabase[req.params.shortURL]) {
     res.redirect(longURL);
 
