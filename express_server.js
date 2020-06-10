@@ -22,7 +22,8 @@ app.use(cookieParser());
 
 /* HOMEPAGE */
 app.get('/', (req, res) => {
-  res.render('urls_index!');
+  const templateVars = { urls: urlDatabase, user: users[req.cookies.user_id] };
+  res.render('homepage', templateVars);
 });
 
 /* GET login form */
