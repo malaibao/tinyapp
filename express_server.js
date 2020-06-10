@@ -30,7 +30,8 @@ app.get('/login', (req, res) => {
 app.post('/login', (req, res) => {
   let foundUser = emailLookUp(req.body.email);
 
-  if (foundUser) {
+  if (foundUser && authenticateUser(foundUser, req.body.password)) {
+
     const option = {
       expires: new Date(Date.now() + 8 * 3600000)
     }
@@ -38,7 +39,7 @@ app.post('/login', (req, res) => {
     res.cookie('user_id', foundUser.id, option);
     res.redirect('/urls');
   } else {
-    res.send('no user found');
+    res.status(403).send('ERROR 403: Invalid user.');
   }
 })
 
@@ -168,4 +169,8 @@ function emailLookUp(inputEmail) {
     }
   }
   return foundUser;
+}
+
+function authenticateUser(user, inputPassword) {
+  return (inputPassword === user.password);
 }
