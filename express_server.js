@@ -22,14 +22,8 @@ app.get('/', (req, res) => {
 
 /* LOGIN */
 app.post('/login', (req, res) => {
-  let foundUser;
+  let foundUser = emailLookUp(req.body.email, req.body.password);
 
-  for (let [id, userInfo] of Object.entries(users)) {
-    if (req.body.email === userInfo.email) {
-      foundUser = userInfo;
-      break;
-    }
-  }
   if (foundUser) {
     const option = {
       expires: new Date(Date.now() + 8 * 3600000)
@@ -57,6 +51,11 @@ app.get('/register', (req, res) => {
 app.post('/register', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+
+  if (!email || !password || emailLookUp(email, password)) {
+    res.status(400).send('Error 400');
+  }
+
   const id = uuidv4();
 
   users[id] = {
@@ -151,4 +150,16 @@ function generateRandomString() {
     randStr += alphaNumeric[randNum];
   }
   return randStr;
+}
+
+function emailLookUp(inputEmail, inputPassword) {
+  let foundUser;
+
+  for (let [id, userInfo] of Object.entries(users)) {
+    if (inputEmail === userInfo.email) {
+      foundUser = userInfo;
+      break;
+    }
+  }
+  return foundUser;
 }
