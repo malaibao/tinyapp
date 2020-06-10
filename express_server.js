@@ -5,13 +5,17 @@ const { v4: uuidv4 } = require('uuid');
 const app = express();
 const PORT = 8080;
 
-// import data
-const { urlDatabase, users } = require('./storeData/seedData');
+// import controller functions
+const { generateRandomString, emailLookUp, authenticateUser } = require('./controllers/controllers');
 
-// Config
+// import data
+const { urlDatabase, users } = require('./db/seedDB');
+
+// Config template
 app.set('views', __dirname + '/views');
-app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'ejs');
+
+app.use(express.static(__dirname + '/public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -28,15 +32,18 @@ app.get('/login', (req, res) => {
 
 /* POST LOGIN */
 app.post('/login', (req, res) => {
-  let foundUser = emailLookUp(req.body.email);
 
-  if (foundUser && authenticateUser(foundUser, req.body.password)) {
+  const { password, email } = req.body;
+  const foundUser = emailLookUp(email);
+  const hasAuthenticated = authenticateUser(foundUser, password);
 
-    const option = {
+  // user exists and password is correct
+  if (foundUser && hasAuthenticated) {
+    const cookieExpOption = {
       expires: new Date(Date.now() + 8 * 3600000)
     }
     // set cookie
-    res.cookie('user_id', foundUser.id, option);
+    res.cookie('user_id', foundUser.id, cookieExpOption);
     res.redirect('/urls');
   } else {
     res.status(403).send('ERROR 403: Invalid user.');
@@ -56,8 +63,7 @@ app.get('/register', (req, res) => {
 
 /* POST REGISTER */
 app.post('/register', (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
+  const { email, password } = req.body;
 
   if (!email || !password || emailLookUp(email)) {
     res.status(400).send('Error 400');
@@ -81,7 +87,7 @@ app.post('/register', (req, res) => {
 
 /* GET all URLS */
 app.get('/urls', (req, res) => {
-  let templateVars = { urls: urlDatabase, user: users[req.cookies.user_id] };
+  const templateVars = { urls: urlDatabase, user: users[req.cookies.user_id] };
   res.render('urls_index', templateVars);
 });
 
@@ -104,7 +110,7 @@ app.get('/urls/new', (req, res) => {
 
 /* GET single URL by shortURL */
 app.get('/urls/:shortURL', (req, res) => {
-  let templateVars = {
+  const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL].longURL,
     user: users[req.cookies.user_id]
@@ -119,12 +125,10 @@ app.get('/urls/:shortURL', (req, res) => {
 /* GET shortURL and REDIRECT  */
 app.get('/u/:shortURL', (req, res) => {
   const longURL = urlDatabase[req.params.shortURL].longURL;
-  if (urlDatabase[req.params.shortURL]) {
+  if (!urlDatabase[req.params.shortURL]) {
     res.redirect(longURL);
-
-  } else {
-    res.send('Error 404. Page not found.');
   }
+  res.status(404).send('Error 404. Page not found.');
 });
 
 /* UPDATE(POST) URL */
@@ -147,33 +151,3 @@ app.get('*', (req, res) => {
 app.listen(PORT, () => {
   console.log(`tinyapp app listening on port ${PORT}!`);
 });
-
-function generateRandomString() {
-  const numbers = '1234567890';
-  const alphabets = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const alphaNumeric = numbers.concat(alphabets);
-
-  let randStr = '';
-
-  for (let i = 0; i < 6; i++) {
-    let randNum = Math.floor(Math.random() * alphaNumeric.length);
-    randStr += alphaNumeric[randNum];
-  }
-  return randStr;
-}
-
-function emailLookUp(inputEmail) {
-  let foundUser;
-
-  for (let [id, userInfo] of Object.entries(users)) {
-    if (inputEmail === userInfo.email) {
-      foundUser = userInfo;
-      break;
-    }
-  }
-  return foundUser;
-}
-
-function authenticateUser(user, inputPassword) {
-  return (inputPassword === user.password);
-}
