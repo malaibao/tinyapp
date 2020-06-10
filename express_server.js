@@ -64,7 +64,7 @@ app.post('/register', (req, res) => {
     res.status(400).send('Error 400');
   }
 
-  const id = uuidv4();
+  let id = uuidv4();
 
   users[id] = {
     id,
