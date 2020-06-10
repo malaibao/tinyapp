@@ -8,3 +8,13 @@ color: #CCFFFF;
 border-bottom: solid 1px yellow;
 }
 
+.msg-box{
+    border: solid 1px transparent;
+    border-radius: 10px;
+    height: 20vh;
+    background-color: rgb(224, 198, 148);
+}
+
+.msg-text{
+font-size: 2em;
+}

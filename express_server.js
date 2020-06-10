@@ -6,7 +6,7 @@ const app = express();
 const PORT = 8080;
 
 // import controller functions
-const { generateRandomString, emailLookUp, authenticateUser } = require('./controllers/controllers');
+const { authenticateUser, generateRandomString, emailLookUp, urlsForUser } = require('./controllers/controllers');
 
 // import data
 const { urlDatabase, users } = require('./db/seedDB');
@@ -22,7 +22,7 @@ app.use(cookieParser());
 
 /* HOMEPAGE */
 app.get('/', (req, res) => {
-  res.send('Hello!');
+  res.render('urls_index!');
 });
 
 /* GET login form */
@@ -37,17 +37,16 @@ app.post('/login', (req, res) => {
   const foundUser = emailLookUp(email);
   const hasAuthenticated = authenticateUser(foundUser, password);
 
-  // user exists and password is correct
-  if (foundUser && hasAuthenticated) {
-    const cookieExpOption = {
-      expires: new Date(Date.now() + 8 * 3600000)
-    }
-    // set cookie
-    res.cookie('user_id', foundUser.id, cookieExpOption);
-    res.redirect('/urls');
-  } else {
+  // user does not exist OR password is incorrect
+  if (!foundUser || !hasAuthenticated) {
     res.status(403).send('ERROR 403: Invalid user.');
   }
+  const cookieExpOption = {
+    expires: new Date(Date.now() + 8 * 3600000)
+  }
+  // set cookie
+  res.cookie('user_id', foundUser.id, cookieExpOption);
+  res.redirect('/urls');
 })
 
 /* POST LOGOUT */
@@ -85,10 +84,15 @@ app.post('/register', (req, res) => {
 })
 
 
-/* GET all URLS */
+/* GET user's URLS */
 app.get('/urls', (req, res) => {
-  const templateVars = { urls: urlDatabase, user: users[req.cookies.user_id] };
-  res.render('urls_index', templateVars);
+  const userId = req.cookies.user_id;
+  if (userId) {
+    const userURLS = urlsForUser(userId);
+    const templateVars = { urls: userURLS, user: users[userId] };
+    res.render('urls_index', templateVars);
+  }
+  res.status(401).render('page401', { user: null });
 });
 
 /* POST(CREATE) new URL */
@@ -142,6 +146,10 @@ app.post('/urls/:shortURL', (req, res) => {
 app.post('/urls/:shortURL/delete', (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect('/urls');
+})
+
+app.get('/page401', (req, res) => {
+  res.render('page401', { user: null })
 })
 
 app.get('*', (req, res) => {
