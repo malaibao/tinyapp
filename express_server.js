@@ -109,7 +109,7 @@ app.get('/urls', (req, res) => {
 app.post('/urls', (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
-  urlDatabase[shortURL] = { longURL, userID: req.session.user_id };
+  urlDatabase[shortURL] = { longURL, dateCreated: new Date().toDateString(), numVisit: 0, userID: req.session.user_id };
 
   res.redirect(`/urls/${shortURL}`);
 });
@@ -176,6 +176,7 @@ app.get('/u/:shortURL', (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL].longURL;
   if (!urlDatabase[shortURL]) {
+    urlDatabase[shortURL].numVisit++;
     res.redirect(longURL);
     return;
   }

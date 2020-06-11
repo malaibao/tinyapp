@@ -11,6 +11,8 @@
                 <tr>
                     <th scope="col">Short URL</th>
                     <th scope="col">Long URL</th>
+                    <th scope="col">Views</th>
+                    <th scope="col">Date Created</th>
                 </tr>
             </thead>
             <tbody>
@@ -18,6 +20,8 @@
                 <tr>
                     <td><a href='<%= urls[url].longURL %>'><%= url %></a></td>
                     <td><%= urls[url].longURL %></td>
+                    <td><%= urls[url].numVisit %></td>
+                    <td><%= urls[url].dateCreated %></td>
                 </tr>
                 <% } %>
             </tbody>
