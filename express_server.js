@@ -7,7 +7,7 @@ const app = express();
 const PORT = 8080;
 
 // import controller functions
-const { authenticateUser, generateRandomString, emailLookUp, urlsForUser } = require('./controllers/controllers');
+const { authenticateUser, generateRandomString, getUserByEmail, urlsForUser } = require('./controllers/controllers');
 
 // import data
 const { urlDatabase, users } = require('./db/seedDB');
@@ -47,7 +47,7 @@ app.get('/login', (req, res) => {
 app.post('/login', (req, res) => {
 
   const { password, email } = req.body;
-  const foundUser = emailLookUp(email);
+  const foundUser = getUserByEmail(email);
   const hasAuthenticated = authenticateUser(foundUser, password);
 
   // user does not exist OR password is incorrect
@@ -77,7 +77,7 @@ app.get('/register', (req, res) => {
 app.post('/register', (req, res) => {
   let { email, password } = req.body;
 
-  if (!email || !password || emailLookUp(email)) {
+  if (!email || !password || getUserByEmail(email)) {
     res.status(400).send('Error 400');
   } else {
 
@@ -145,7 +145,7 @@ app.get('/urls/:shortURL', (req, res) => {
 
   // if no shortURL
   if (!urlDatabase[shortURL]) {
-    res.status(404).send('Error 404. Page not found.');
+    res.status(404).render('page404', { user: users[req.session.user_id] });
   }
 
   if (userId === urlDatabase[shortURL].userID) {
@@ -155,6 +155,7 @@ app.get('/urls/:shortURL', (req, res) => {
       user: users[req.session.user_id]
     };
     res.render('urls_show', templateVars);
+    return;
   }
 
   res.status(403).render('page403', { user: users[userId] });
@@ -167,8 +168,9 @@ app.post('/urls/:shortURL', (req, res) => {
 
   if (userId === urlDatabase[shortURL].userID) {
     const longURL = req.body.longURL;
-    urlDatabase[req.params.shortURL] = longURL;
-    res.redirect(`/urls/${req.params.shortURL}`);
+    urlDatabase[shortURL].longURL = longURL;
+    res.redirect(`/urls/${shortURL}`);
+    return;
   }
   res.status(403).send('[Error 403] Sorry! You do not have permission to update the URL.');
 })
@@ -179,8 +181,9 @@ app.get('/u/:shortURL', (req, res) => {
   const longURL = urlDatabase[shortURL].longURL;
   if (!urlDatabase[shortURL]) {
     res.redirect(longURL);
+    return;
   }
-  res.status(404).send('Error 404. Page not found.');
+  res.status(404).render('page404', { user: users[req.session.user_id] });
 });
 
 /* DELETE(POST) url */
@@ -191,6 +194,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   if (userId === urlDatabase[shortURL].userID) {
     delete urlDatabase[req.params.shortURL];
     res.redirect('/urls');
+    return;
   }
   res.status(403).send('[Error 403] Sorry! You do not have permission to delete the URL.');
 })
