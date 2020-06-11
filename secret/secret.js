@@ -6,7 +6,7 @@ const secretKey1 = 'I ate ramen just now';
 const secretKey2 = 'It tasted so good!';
 
 module.exports = {
-    saltRound,
-    secretKey1,
-    secretKey2
-}
+  saltRound,
+  secretKey1,
+  secretKey2,
+};
