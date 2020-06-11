@@ -41,6 +41,7 @@ app.post('/login', (req, res) => {
   // user does not exist OR password is incorrect
   if (!foundUser || !hasAuthenticated) {
     res.status(403).send('ERROR 403: Invalid user.');
+    return;
   }
   const cookieExpOption = {
     expires: new Date(Date.now() + 8 * 3600000)
@@ -48,6 +49,7 @@ app.post('/login', (req, res) => {
   // set cookie
   res.cookie('user_id', foundUser.id, cookieExpOption);
   res.redirect('/urls');
+
 })
 
 /* POST LOGOUT */
@@ -69,7 +71,7 @@ app.post('/register', (req, res) => {
     res.status(400).send('Error 400');
   }
 
-  let id = uuidv4();
+  const id = uuidv4();
 
   users[id] = {
     id,
@@ -77,10 +79,10 @@ app.post('/register', (req, res) => {
     password
   }
   // set cookie
-  const option = {
+  const cookieExpOption = {
     expires: new Date(Date.now() + 8 * 3600000)
   }
-  res.cookie('user_id', id, option);
+  res.cookie('user_id', id, cookieExpOption);
   res.redirect('/urls');
 })
 
@@ -92,8 +94,9 @@ app.get('/urls', (req, res) => {
     const userURLS = urlsForUser(userId);
     const templateVars = { urls: userURLS, user: users[userId] };
     res.render('urls_index', templateVars);
+  } else {
+    res.status(401).render('page401', { user: null });
   }
-  res.status(401).render('page401', { user: null });
 });
 
 /* POST(CREATE) new URL */
@@ -109,8 +112,9 @@ app.post('/urls', (req, res) => {
 app.get('/urls/new', (req, res) => {
   if (req.cookies.user_id) {
     res.render('urls_new', { user: users[req.cookies.user_id] });
+  } else {
+    res.redirect('/login');
   }
-  res.redirect('/login');
 });
 
 /* GET single URL by shortURL */
