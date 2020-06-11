@@ -174,10 +174,6 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   res.status(403).send('[Error 403] Sorry! You do not have permission to delete the URL.');
 })
 
-app.get('/page401', (req, res) => {
-  res.render('page401', { user: null })
-})
-
 app.get('*', (req, res) => {
   res.render('page404', { user: users[req.cookies.user_id] });
 });
