@@ -68,7 +68,10 @@ const users = {
   },
 };
 
+const uniqVisitorId = [1, 2, 3];
+
 module.exports = {
   urlDatabase,
   users,
+  uniqVisitorId
 };

@@ -201,10 +201,19 @@ app.put('/urls/:shortURL', (req, res) => {
 /* GET shortURL and REDIRECT  */
 app.get('/u/:shortURL', (req, res) => {
   const shortURL = req.params.shortURL;
+  const urlData = urlDatabase[shortURL];
 
-  if (urlDatabase[shortURL]) {
-    const longURL = urlDatabase[shortURL].longURL;
-    urlDatabase[shortURL].numVisit++;
+  if (urlData) {
+    const longURL = urlData.longURL;
+
+    let visitorId = req.cookies.visitor_id;
+    if (!visitorId) {
+      visitorId = generateVisitorId();
+      res.cookie('visitor_id', visitorId);
+    }
+
+    const newLog = { visitorId: visitorId, time: new Date(Date.now()) }
+    urlData.logs.push(newLog);
     res.redirect(longURL);
     return;
   }

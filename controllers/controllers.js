@@ -2,7 +2,7 @@
 const bcrypt = require('bcrypt');
 
 // import data
-const { urlDatabase, users } = require('../db/seedDB');
+const { urlDatabase, users, uniqVisitorId } = require('../db/seedDB');
 
 function authenticateUser({ password }, inputPassword) {
   return bcrypt.compareSync(inputPassword, password);
@@ -43,7 +43,7 @@ function urlsForUser(id) {
 }
 
 function generateVisitorId() {
-
+  return Math.floor(Math.random() * (100000 - 4)) + 4;
 }
 
 module.exports = {
