@@ -22,12 +22,13 @@ function generateRandomString() {
     return randStr;
 }
 
-function emailLookUp(inputEmail) {
+function getUserByEmail(inputEmail) {
     for (let [id, userInfo] of Object.entries(users)) {
         if (inputEmail === userInfo.email) {
             return userInfo;
         }
     }
+    return undefined;
 }
 
 function urlsForUser(id) {
@@ -44,6 +45,6 @@ function urlsForUser(id) {
 module.exports = {
     authenticateUser,
     generateRandomString,
-    emailLookUp,
+    getUserByEmail,
     urlsForUser,
 }
