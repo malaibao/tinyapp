@@ -42,9 +42,14 @@ function urlsForUser(id) {
   return urls;
 }
 
+function generateVisitorId() {
+
+}
+
 module.exports = {
   authenticateUser,
   generateRandomString,
   getUserByEmail,
   urlsForUser,
+  generateVisitorId
 };

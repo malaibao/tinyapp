@@ -24,5 +24,27 @@
             </form>
         </div>
     </div>
+    <div class="card text-center">
+        <div class="card-body">
+            <h3>Logs</h3>
 
-<%- include ('partials/_footer') %>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Visitor Id</th>
+                        <th scope="col">Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for(let x of url.logs){ %>
+                    <tr>
+                        <th scope="row"><%= x.visitorId %></th>
+                        <td><%= x.time %></td>
+                    </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <%- include ('partials/_footer') %>

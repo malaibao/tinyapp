@@ -1,4 +1,5 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt');
@@ -13,6 +14,7 @@ const {
   generateRandomString,
   getUserByEmail,
   urlsForUser,
+  generateVisitorId
 } = require('./controllers/controllers');
 const { saltRound, secretKey1, secretKey2 } = require('./secret/secret');
 
@@ -27,6 +29,7 @@ app.use(express.static(__dirname + '/public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
+app.use(cookieParser());
 app.use(
   cookieSession({
     name: 'session',
@@ -41,6 +44,10 @@ app.get('/', (req, res) => {
     user: users[req.session.user_id],
     users,
   };
+
+  // // set cookie for user
+  // res.cookie('visitor_id', generateVisitorId());
+
   res.render('homepage', templateVars);
 });
 
