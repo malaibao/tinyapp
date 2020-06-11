@@ -6,18 +6,12 @@ const bcrypt = require('bcrypt');
 const app = express();
 const PORT = 8080;
 
-// import controller functions
+// import controller functions, secret file
 const { authenticateUser, generateRandomString, getUserByEmail, urlsForUser } = require('./controllers/controllers');
+const { saltRound, secretKey1, secretKey2 } = require('./secret/secret');
 
 // import data
 const { urlDatabase, users } = require('./db/seedDB');
-
-// set saltRound (Should be secret)
-const saltRound = 10;
-
-// secretKeys
-const secretKey1 = 'I ate ramen just now';
-const secretKey2 = 'It tasted so good!';
 
 // Config template
 app.set('views', __dirname + '/views');
@@ -79,22 +73,23 @@ app.post('/register', (req, res) => {
 
   if (!email || !password || getUserByEmail(email)) {
     res.status(400).send('Error 400');
-  } else {
-
-    const id = uuidv4();
-
-    password = bcrypt.hashSync(password, saltRound);
-
-    users[id] = {
-      id,
-      email,
-      password
-    }
-
-    // set session
-    req.session.user_id = id;
-    res.redirect('/urls');
+    return;
   }
+
+  const id = uuidv4();
+
+  password = bcrypt.hashSync(password, saltRound);
+
+  users[id] = {
+    id,
+    email,
+    password
+  }
+
+  // set session
+  req.session.user_id = id;
+  res.redirect('/urls');
+
 })
 
 
@@ -105,9 +100,10 @@ app.get('/urls', (req, res) => {
     const userURLS = urlsForUser(userId);
     const templateVars = { urls: userURLS, user: users[userId] };
     res.render('urls_index', templateVars);
-  } else {
-    res.status(401).render('page401', { user: null });
+    return;
   }
+  res.status(401).render('page401', { user: null });
+
 });
 
 /* POST(CREATE) new URL */
@@ -133,9 +129,10 @@ app.get("/users.json", (req, res) => {
 app.get('/urls/new', (req, res) => {
   if (req.session.user_id) {
     res.render('urls_new', { user: users[req.session.user_id] });
-  } else {
-    res.redirect('/login');
+    return;
   }
+  res.redirect('/login');
+
 });
 
 /* GET single URL by shortURL */
