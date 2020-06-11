@@ -1,5 +1,5 @@
 const express = require('express');
-const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt');
 
@@ -15,6 +15,10 @@ const { urlDatabase, users } = require('./db/seedDB');
 // set saltRound (Should be secret)
 const saltRound = 10;
 
+// secretKeys
+const secretKey1 = 'I ate ramen just now';
+const secretKey2 = 'It tasted so good!';
+
 // Config template
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
@@ -22,17 +26,21 @@ app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: [secretKey1, secretKey2],
+  maxAge: 24 * 60 * 60 * 1000
+}))
 
 /* HOMEPAGE */
 app.get('/', (req, res) => {
-  const templateVars = { urls: urlDatabase, user: users[req.cookies.user_id], users };
+  const templateVars = { urls: urlDatabase, user: users[req.session.user_id], users };
   res.render('homepage', templateVars);
 });
 
 /* GET login form */
 app.get('/login', (req, res) => {
-  res.render('login', { user: users[req.cookies.user_id] });
+  res.render('login', { user: users[req.session.user_id] });
 })
 
 /* POST LOGIN */
@@ -47,24 +55,22 @@ app.post('/login', (req, res) => {
     res.status(403).send('ERROR 403: Invalid user.');
     return;
   }
-  const cookieExpOption = {
-    expires: new Date(Date.now() + 8 * 3600000)
-  }
-  // set cookie
-  res.cookie('user_id', foundUser.id, cookieExpOption);
+
+  // set session
+  req.session.user_id = foundUser.id;
   res.redirect('/urls');
 
 })
 
 /* POST LOGOUT */
 app.post('/logout', (req, res) => {
-  res.clearCookie('user_id');
+  req.session.user_id = null;
   res.redirect('/');
 })
 
 /* GET register form */
 app.get('/register', (req, res) => {
-  res.render('register', { user: users[req.cookies.user_id] });
+  res.render('register', { user: users[req.session.user_id] });
 })
 
 /* POST REGISTER */
@@ -84,11 +90,9 @@ app.post('/register', (req, res) => {
       email,
       password
     }
-    // set cookie
-    const cookieExpOption = {
-      expires: new Date(Date.now() + 8 * 3600000)
-    }
-    res.cookie('user_id', id, cookieExpOption);
+
+    // set session
+    req.session.user_id = id;
     res.redirect('/urls');
   }
 })
@@ -96,7 +100,7 @@ app.post('/register', (req, res) => {
 
 /* GET user's URLS */
 app.get('/urls', (req, res) => {
-  const userId = req.cookies.user_id;
+  const userId = req.session.user_id;
   if (userId) {
     const userURLS = urlsForUser(userId);
     const templateVars = { urls: userURLS, user: users[userId] };
@@ -110,7 +114,7 @@ app.get('/urls', (req, res) => {
 app.post('/urls', (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
-  urlDatabase[shortURL] = { longURL, userID: req.cookies.user_id };
+  urlDatabase[shortURL] = { longURL, userID: req.session.user_id };
 
   res.redirect(`/urls/${shortURL}`);
 });
@@ -127,8 +131,8 @@ app.get("/users.json", (req, res) => {
 
 /* GET URL creating form */
 app.get('/urls/new', (req, res) => {
-  if (req.cookies.user_id) {
-    res.render('urls_new', { user: users[req.cookies.user_id] });
+  if (req.session.user_id) {
+    res.render('urls_new', { user: users[req.session.user_id] });
   } else {
     res.redirect('/login');
   }
@@ -137,7 +141,7 @@ app.get('/urls/new', (req, res) => {
 /* GET single URL by shortURL */
 app.get('/urls/:shortURL', (req, res) => {
   const shortURL = req.params.shortURL;
-  const userId = req.cookies.user_id;
+  const userId = req.session.user_id;
 
   // if no shortURL
   if (!urlDatabase[shortURL]) {
@@ -148,7 +152,7 @@ app.get('/urls/:shortURL', (req, res) => {
     const templateVars = {
       shortURL: req.params.shortURL,
       longURL: urlDatabase[shortURL].longURL,
-      user: users[req.cookies.user_id]
+      user: users[req.session.user_id]
     };
     res.render('urls_show', templateVars);
   }
@@ -159,7 +163,7 @@ app.get('/urls/:shortURL', (req, res) => {
 /* UPDATE(POST) URL */
 app.post('/urls/:shortURL', (req, res) => {
   const shortURL = req.params.shortURL;
-  const userId = req.cookies.user_id;
+  const userId = req.session.user_id;
 
   if (userId === urlDatabase[shortURL].userID) {
     const longURL = req.body.longURL;
@@ -182,7 +186,7 @@ app.get('/u/:shortURL', (req, res) => {
 /* DELETE(POST) url */
 app.post('/urls/:shortURL/delete', (req, res) => {
   const shortURL = req.params.shortURL;
-  const userId = req.cookies.user_id;
+  const userId = req.session.user_id;
 
   if (userId === urlDatabase[shortURL].userID) {
     delete urlDatabase[req.params.shortURL];
@@ -192,7 +196,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 })
 
 app.get('*', (req, res) => {
-  res.render('page404', { user: users[req.cookies.user_id] });
+  res.render('page404', { user: users[req.session.user_id] });
 });
 
 app.listen(PORT, () => {
