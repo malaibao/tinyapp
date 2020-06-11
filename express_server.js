@@ -2,6 +2,7 @@ const express = require('express');
 const cookieSession = require('cookie-session');
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt');
+const methodOverride = require('method-override');
 
 const app = express();
 const PORT = 8080;
@@ -20,10 +21,11 @@ app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride('_method'));
 app.use(cookieSession({
   name: 'session',
   keys: [secretKey1, secretKey2],
-}))
+}));
 
 /* HOMEPAGE */
 app.get('/', (req, res) => {
@@ -34,7 +36,7 @@ app.get('/', (req, res) => {
 /* GET login form */
 app.get('/login', (req, res) => {
   res.render('login', { user: users[req.session.user_id] });
-})
+});
 
 /* POST LOGIN */
 app.post('/login', (req, res) => {
@@ -53,18 +55,18 @@ app.post('/login', (req, res) => {
   req.session.user_id = foundUser.id;
   res.redirect('/urls');
 
-})
+});
 
 /* POST LOGOUT */
 app.post('/logout', (req, res) => {
   req.session.user_id = null;
   res.redirect('/');
-})
+});
 
 /* GET register form */
 app.get('/register', (req, res) => {
   res.render('register', { user: users[req.session.user_id] });
-})
+});
 
 /* POST REGISTER */
 app.post('/register', (req, res) => {
@@ -89,8 +91,7 @@ app.post('/register', (req, res) => {
   req.session.user_id = id;
   res.redirect('/urls');
 
-})
-
+});
 
 /* GET user's URLS */
 app.get('/urls', (req, res) => {
@@ -146,8 +147,8 @@ app.get('/urls/:shortURL', (req, res) => {
 
   if (userId === urlDatabase[shortURL].userID) {
     const templateVars = {
-      shortURL: req.params.shortURL,
-      longURL: urlDatabase[shortURL].longURL,
+      shortURL,
+      url: urlDatabase[shortURL],
       user: users[req.session.user_id]
     };
     res.render('urls_show', templateVars);
@@ -157,7 +158,71 @@ app.get('/urls/:shortURL', (req, res) => {
   res.status(403).render('page403', { user: users[userId] });
 });
 
+/* UPDATE URL */
+app.put('/urls/:shortURL', (req, res) => {
+  const shortURL = req.params.shortURL;
+  const userId = req.session.user_id;
+
+  if (userId === urlDatabase[shortURL].userID) {
+    const longURL = req.body.longURL;
+    urlDatabase[shortURL].longURL = longURL;
+    res.redirect(`/urls/${shortURL}`);
+    return;
+  }
+  res.status(403).send('[Error 403] Sorry! You do not have permission to update the URL.');
+});
+
+/* GET shortURL and REDIRECT  */
+app.get('/u/:shortURL', (req, res) => {
+  const shortURL = req.params.shortURL;
+
+  if (urlDatabase[shortURL]) {
+    const longURL = urlDatabase[shortURL].longURL;
+    urlDatabase[shortURL].numVisit++;
+    res.redirect(longURL);
+    return;
+  }
+  res.status(404).render('page404', { user: users[req.session.user_id] });
+});
+
+/* DELETE URL */
+app.delete('/urls/:shortURL', (req, res) => {
+  const shortURL = req.params.shortURL;
+  const userId = req.session.user_id;
+
+  if (userId === urlDatabase[shortURL].userID) {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect('/urls');
+    return;
+  }
+  res.status(403).send('[Error 403] Sorry! You do not have permission to delete the URL.');
+});
+
+app.get('*', (req, res) => {
+  res.render('page404', { user: users[req.session.user_id] });
+});
+
+app.listen(PORT, () => {
+  console.log(`tinyapp app listening on port ${PORT}!`);
+});
+
+/* DELETE(POST) url */
+/*
+app.post('/urls/:shortURL/delete', (req, res) => {
+  const shortURL = req.params.shortURL;
+  const userId = req.session.user_id;
+
+  if (userId === urlDatabase[shortURL].userID) {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect('/urls');
+    return;
+  }
+  res.status(403).send('[Error 403] Sorry! You do not have permission to delete the URL.');
+})
+*/
+
 /* UPDATE(POST) URL */
+/*
 app.post('/urls/:shortURL', (req, res) => {
   const shortURL = req.params.shortURL;
   const userId = req.session.user_id;
@@ -170,36 +235,4 @@ app.post('/urls/:shortURL', (req, res) => {
   }
   res.status(403).send('[Error 403] Sorry! You do not have permission to update the URL.');
 })
-
-/* GET shortURL and REDIRECT  */
-app.get('/u/:shortURL', (req, res) => {
-  const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL].longURL;
-  if (!urlDatabase[shortURL]) {
-    urlDatabase[shortURL].numVisit++;
-    res.redirect(longURL);
-    return;
-  }
-  res.status(404).render('page404', { user: users[req.session.user_id] });
-});
-
-/* DELETE(POST) url */
-app.post('/urls/:shortURL/delete', (req, res) => {
-  const shortURL = req.params.shortURL;
-  const userId = req.session.user_id;
-
-  if (userId === urlDatabase[shortURL].userID) {
-    delete urlDatabase[req.params.shortURL];
-    res.redirect('/urls');
-    return;
-  }
-  res.status(403).send('[Error 403] Sorry! You do not have permission to delete the URL.');
-})
-
-app.get('*', (req, res) => {
-  res.render('page404', { user: users[req.session.user_id] });
-});
-
-app.listen(PORT, () => {
-  console.log(`tinyapp app listening on port ${PORT}!`);
-});
+*/
