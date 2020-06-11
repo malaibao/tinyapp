@@ -1,9 +1,9 @@
 const urlDatabase = {
-    b2xVn2: { longURL: 'http://www.youtube.com', userID: 'jdoe' },
-    b3xVn3: { longURL: 'https://www.lighthouselabs.ca', userID: 'jdoe' },
-    b4xVn4: { longURL: 'https://getbootstrap.com', userID: 'jdoe' },
-    '9sm5xK': { longURL: 'http://www.google.com', userID: 'adoe' },
-    '9sm5Aa': { longURL: 'https://www.netflix.com', userID: 'adoe' },
+    b2xVn2: { longURL: 'http://www.youtube.com', dateCreated: new Date().toDateString(), numVisit: 5, userID: 'jdoe' },
+    b3xVn3: { longURL: 'https://www.lighthouselabs.ca', dateCreated: new Date().toDateString(), numVisit: 2, userID: 'jdoe' },
+    b4xVn4: { longURL: 'https://getbootstrap.com', dateCreated: new Date().toDateString(), numVisit: 1, userID: 'jdoe' },
+    '9sm5xK': { longURL: 'http://www.google.com', dateCreated: new Date().toDateString(), numVisit: 3, userID: 'adoe' },
+    '9sm5Aa': { longURL: 'https://www.netflix.com', dateCreated: new Date().toDateString(), numVisit: 0, userID: 'adoe' },
 };
 
 const users = {
