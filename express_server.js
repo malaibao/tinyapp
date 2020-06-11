@@ -1,6 +1,7 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const { v4: uuidv4 } = require('uuid');
+const bcrypt = require('bcrypt');
 
 const app = express();
 const PORT = 8080;
@@ -10,6 +11,9 @@ const { authenticateUser, generateRandomString, emailLookUp, urlsForUser } = req
 
 // import data
 const { urlDatabase, users } = require('./db/seedDB');
+
+// set saltRound (Should be secret)
+const saltRound = 10;
 
 // Config template
 app.set('views', __dirname + '/views');
@@ -65,25 +69,28 @@ app.get('/register', (req, res) => {
 
 /* POST REGISTER */
 app.post('/register', (req, res) => {
-  const { email, password } = req.body;
+  let { email, password } = req.body;
 
   if (!email || !password || emailLookUp(email)) {
     res.status(400).send('Error 400');
-  }
+  } else {
 
-  const id = uuidv4();
+    const id = uuidv4();
 
-  users[id] = {
-    id,
-    email,
-    password
+    password = bcrypt.hashSync(password, saltRound);
+
+    users[id] = {
+      id,
+      email,
+      password
+    }
+    // set cookie
+    const cookieExpOption = {
+      expires: new Date(Date.now() + 8 * 3600000)
+    }
+    res.cookie('user_id', id, cookieExpOption);
+    res.redirect('/urls');
   }
-  // set cookie
-  const cookieExpOption = {
-    expires: new Date(Date.now() + 8 * 3600000)
-  }
-  res.cookie('user_id', id, cookieExpOption);
-  res.redirect('/urls');
 })
 
 
@@ -106,6 +113,16 @@ app.post('/urls', (req, res) => {
   urlDatabase[shortURL] = { longURL, userID: req.cookies.user_id };
 
   res.redirect(`/urls/${shortURL}`);
+});
+
+/* GET urlDatabase json */
+app.get("/urls.json", (req, res) => {
+  res.json(urlDatabase);
+});
+
+/* GET users json */
+app.get("/users.json", (req, res) => {
+  res.json(users);
 });
 
 /* GET URL creating form */

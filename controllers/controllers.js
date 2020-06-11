@@ -1,8 +1,11 @@
+// get bcrypt package
+const bcrypt = require('bcrypt');
+
 // import data
 const { urlDatabase, users } = require('../db/seedDB');
 
 function authenticateUser({ password }, inputPassword) {
-    return (inputPassword === password);
+    return bcrypt.compareSync(inputPassword, password);
 }
 
 function generateRandomString() {
