@@ -168,6 +168,7 @@ app.get('/urls/:shortURL', (req, res) => {
   // if no shortURL
   if (!urlDatabase[shortURL]) {
     res.status(404).render('page404', { user: users[req.session.user_id] });
+    return;
   }
 
   if (userId === urlDatabase[shortURL].userID) {
