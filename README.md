@@ -44,6 +44,7 @@ Error 409 Page
 - method-override
 
 ## Dev Dependencies
+
 - chai
 - mocha
 
@@ -53,4 +54,5 @@ Error 409 Page
 - Run the development web server using the `node express_server.js` command.
 
 ### Troubleshooting
-1. Make sure Express 4.16 is being utilized as this project did not use body-parser package but the built-in JSON middleware.
+
+1. Please make sure Express 4.16 is being utilized as this project did not use body-parser package but the built-in JSON middleware.
