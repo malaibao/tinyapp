@@ -25,10 +25,8 @@ Error 401 Page
 Error 403 Page
 !["Page not found Error 403"](./docs/page403.png)
 
-
 Error 404 Page
 !["Page not found Error 404"](./docs/page404.png)
-
 
 Error 409 Page
 !["Wrong Credential Error 409"](./docs/page409.png)
