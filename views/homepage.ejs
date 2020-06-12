@@ -1,4 +1,4 @@
-<%- include ('partials/_header') %>
+<%- include ("partials/_header") %>
 
 <title>TinyApp - Welcome</title>
 </head>
@@ -19,7 +19,7 @@
             <tbody>
                 <% for(let url in urls) { %>
                 <tr>
-                    <td><a href='/u/<%= url %>'><%= url %></a></td>
+                    <td><a href="/u/<%= url %>"><%= url %></a></td>
                     <td><%= urls[url].longURL %></td>
                     <td><%= urls[url].logs.length %></td>
                     <td><%= urls[url].visitors.length %></td>
@@ -30,4 +30,4 @@
         </table>
     </main>
 
-    <%- include ('partials/_footer') %>
+    <%- include ("partials/_footer") %>

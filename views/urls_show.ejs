@@ -1,4 +1,4 @@
-<%- include ('partials/_header') %>
+<%- include ("partials/_header") %>
 
 <title>TinyApp</title>
 </head>
@@ -12,9 +12,9 @@
             <p class="card-text">Created on: <%= url.dateCreated %></p>
         </div>
         <div class="card-footer text-muted">
-            <h1 class='mx-auto mt-2'>Edit</h1>
-            <form class='mx-auto form-inline' action='/urls/<%= shortURL %>?_method=PUT' method='POST'
-                style='width: 50%;'>
+            <h1 class="mx-auto mt-2">Edit</h1>
+            <form class="mx-auto form-inline" action="/urls/<%= shortURL %>?_method=PUT" method="POST"
+                style="width: 50%;">
                 <div class="form-group my-2 mx-auto">
                     <label for="longURL">New URL:</label>
                     <input class="form-control" type="text" name="longURL" placeholder="<%= url.longURL %>"
@@ -46,4 +46,4 @@
         </div>
     </div>
 
-    <%- include ('partials/_footer') %>
+    <%- include ("partials/_footer") %>

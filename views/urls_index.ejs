@@ -1,4 +1,4 @@
-<%- include ('partials/_header') %>
+<%- include ("partials/_header") %>
 
 <title>TinyApp</title>
 </head>
@@ -21,19 +21,19 @@
             <tbody>
                 <% for(let url in urls) { %>
                 <tr>
-                    <td><a href='/u/<%= url %>'><%= url %></a></td>
+                    <td><a href="/u/<%= url %>"><%= url %></a></td>
                     <td><%= urls[url].longURL %></td>
                     <td><%= urls[url].logs.length %></td>
                     <td><%= urls[url].visitors.length %></td>
                     <td><%= urls[url].dateCreated %></td>
 
                     <td>
-                        <form action="/urls/<%= url %>" method='GET'>
+                        <form action="/urls/<%= url %>" method="GET">
                             <button type="submit" class="btn btn-outline-primary">EDIT</button>
                         </form>
                     </td>
                     <td>
-                        <form action="/urls/<%= url %>?_method=DELETE" method='POST'>
+                        <form action="/urls/<%= url %>?_method=DELETE" method="POST">
                             <button type="submit" class="btn btn-outline-danger">DELETE</button>
                         </form>
                     </td>
@@ -43,4 +43,4 @@
         </table>
     </main>
 
-    <%- include ('partials/_footer') %>
+    <%- include ("partials/_footer") %>
