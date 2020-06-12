@@ -2,6 +2,10 @@
   font-family: 'Karla', sans-serif;
 }
 
+i{
+  color: white;
+}
+
 nav {
   background-color: #48778f;
 }
