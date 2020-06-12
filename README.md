@@ -7,8 +7,12 @@ TinyApp is a full stack web application built with Node and Express that allows 
 !["Homepage. Showing all urls."](./docs/homepage.png)
 !["Login Page"](./docs/login_page.png)
 !["Registration Page"](./docs/register_page.png)
-!["User's URL Page"](./docs/)
-!["Create New URL Page"](.docs/)
+!["User's URL Page"](./docs/user_url_page.png)
+!["Create New URL Page"](./docs/create_new_url.png)
+!["Page not found Error 401"](./docs/page401.png)
+!["Page not found Error 403"](./docs/page403.png)
+!["Page not found Error 404"](./docs/page404.png)
+!["Wrong Credential Error 409"](./docs/page409.png)
 
 ## Dependencies
 
