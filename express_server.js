@@ -92,7 +92,7 @@ app.post('/register', (req, res) => {
   let { email, password } = req.body;
 
   if (!email || !password || getUserByEmail(email)) {
-    res.status(400).send('Error 400');
+    res.status(400).render('page400', { user: null });
     return;
   }
 
