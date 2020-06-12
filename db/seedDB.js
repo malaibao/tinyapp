@@ -2,7 +2,6 @@ const urlDatabase = {
   b2xVn2: {
     longURL: 'http://www.youtube.com',
     dateCreated: new Date(2020, 5, 25, 9, 0, 30).toDateString(),
-    numVisit: 5,
     visitors: [1, 2, 3],
     logs: [{ visitorId: 1, time: new Date(2020, 5, 25, 10, 33, 30) },
     { visitorId: 1, time: new Date(2020, 5, 25, 11, 33, 30) },
@@ -14,7 +13,6 @@ const urlDatabase = {
   b3xVn3: {
     longURL: 'https://www.lighthouselabs.ca',
     dateCreated: new Date(2020, 5, 29, 9, 0, 0).toDateString(),
-    numVisit: 2,
     visitors: [2, 3],
     logs: [
       { visitorId: 2, time: new Date(2020, 5, 29, 12, 20, 40) },
@@ -24,7 +22,6 @@ const urlDatabase = {
   b4xVn4: {
     longURL: 'https://getbootstrap.com',
     dateCreated: new Date(2020, 6, 2, 13, 20, 30).toDateString(),
-    numVisit: 1,
     visitors: [2],
     logs: [
       { visitorId: 2, time: new Date(2020, 6, 2, 15, 10, 17) }],
@@ -33,7 +30,6 @@ const urlDatabase = {
   '9sm5xK': {
     longURL: 'http://www.google.com',
     dateCreated: new Date(2020, 6, 5, 8, 0, 10).toDateString(),
-    numVisit: 3,
     visitors: [1, 2, 3],
     logs: [{ visitorId: 3, time: new Date(2020, 6, 5, 9, 30, 15) },
     { visitorId: 1, time: new Date(2020, 6, 7, 17, 50, 10) },
@@ -43,7 +39,6 @@ const urlDatabase = {
   '9sm5Aa': {
     longURL: 'https://www.netflix.com',
     dateCreated: new Date(2020, 6, 6, 11, 0, 0).toDateString(),
-    numVisit: 0,
     visitors: [],
     logs: [],
     userID: 'adoe',
@@ -68,10 +63,7 @@ const users = {
   },
 };
 
-const uniqVisitorId = [1, 2, 3];
-
 module.exports = {
   urlDatabase,
   users,
-  uniqVisitorId
 };

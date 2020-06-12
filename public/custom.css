@@ -9,8 +9,9 @@ nav {
   color: white;
 }
 
-.activeLink {
+.activeLink{
   color: white;
+  font-size: 1.15em;
   font-weight: 900;
 }
 

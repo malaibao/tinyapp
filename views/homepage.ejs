@@ -5,13 +5,14 @@
 
 <body>
     <main style="margin: 1em;">
-        <h3>URLs</h3>
-        <table class="table">
+        <h3><strong>URLs</strong></h3>
+        <table class="table table-striped">
             <thead>
                 <tr>
                     <th scope="col">Short URL</th>
                     <th scope="col">Long URL</th>
                     <th scope="col">Views</th>
+                    <th scope="col">Unique Views</th>
                     <th scope="col">Date Created</th>
                 </tr>
             </thead>
@@ -21,6 +22,7 @@
                     <td><a href='/u/<%= url %>'><%= url %></a></td>
                     <td><%= urls[url].longURL %></td>
                     <td><%= urls[url].logs.length %></td>
+                    <td><%= urls[url].visitors.length %></td>
                     <td><%= urls[url].dateCreated %></td>
                 </tr>
                 <% } %>

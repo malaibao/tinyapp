@@ -64,7 +64,7 @@ app.post('/login', (req, res) => {
 
   // user does not exist OR password is incorrect
   if (!foundUser || !hasAuthenticated) {
-    res.status(403).send('ERROR 403: Invalid user.');
+    res.status(403).render('incorrectInput', { user: null });
     return;
   }
 
@@ -130,7 +130,8 @@ app.post('/urls', (req, res) => {
   urlDatabase[shortURL] = {
     longURL,
     dateCreated: new Date().toDateString(),
-    numVisit: 0,
+    visitors: [],
+    logs: [],
     userID: req.session.user_id,
   };
 
@@ -206,12 +207,19 @@ app.get('/u/:shortURL', (req, res) => {
   if (urlData) {
     const longURL = urlData.longURL;
 
+    // check if user has a cookie
     let visitorId = req.cookies.visitor_id;
     if (!visitorId) {
       visitorId = generateVisitorId();
       res.cookie('visitor_id', visitorId);
     }
 
+    // check if visitors contains this, push if not
+    if (!urlData.visitors.includes(visitorId)) {
+      urlData.visitors.push(visitorId);
+    }
+
+    // log record of visit
     const newLog = { visitorId: visitorId, time: new Date(Date.now()) }
     urlData.logs.push(newLog);
     res.redirect(longURL);
@@ -243,33 +251,3 @@ app.listen(PORT, () => {
   console.log(`tinyapp app listening on port ${PORT}!`);
 });
 
-/* DELETE(POST) url */
-/*
-app.post('/urls/:shortURL/delete', (req, res) => {
-  const shortURL = req.params.shortURL;
-  const userId = req.session.user_id;
-
-  if (userId === urlDatabase[shortURL].userID) {
-    delete urlDatabase[req.params.shortURL];
-    res.redirect('/urls');
-    return;
-  }
-  res.status(403).send('[Error 403] Sorry! You do not have permission to delete the URL.');
-})
-*/
-
-/* UPDATE(POST) URL */
-/*
-app.post('/urls/:shortURL', (req, res) => {
-  const shortURL = req.params.shortURL;
-  const userId = req.session.user_id;
-
-  if (userId === urlDatabase[shortURL].userID) {
-    const longURL = req.body.longURL;
-    urlDatabase[shortURL].longURL = longURL;
-    res.redirect(`/urls/${shortURL}`);
-    return;
-  }
-  res.status(403).send('[Error 403] Sorry! You do not have permission to update the URL.');
-})
-*/

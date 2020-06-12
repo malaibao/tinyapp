@@ -2,8 +2,9 @@
 const bcrypt = require('bcrypt');
 
 // import data
-const { urlDatabase, users, uniqVisitorId } = require('../db/seedDB');
+const { urlDatabase, users } = require('../db/seedDB');
 
+// check if password inputted in login form is correct
 function authenticateUser({ password }, inputPassword) {
   return bcrypt.compareSync(inputPassword, password);
 }
@@ -22,6 +23,7 @@ function generateRandomString() {
   return randStr;
 }
 
+// check DB if user exists
 function getUserByEmail(inputEmail) {
   for (let [id, userInfo] of Object.entries(users)) {
     if (inputEmail === userInfo.email) {
@@ -31,6 +33,7 @@ function getUserByEmail(inputEmail) {
   return undefined;
 }
 
+// get user's urls with user id
 function urlsForUser(id) {
   const urls = {};
   for (let [shortURL, url] of Object.entries(urlDatabase)) {
@@ -42,6 +45,7 @@ function urlsForUser(id) {
   return urls;
 }
 
+// A very bad method to generate visitorId, but it works for a tiny app
 function generateVisitorId() {
   return Math.floor(Math.random() * (100000 - 4)) + 4;
 }
