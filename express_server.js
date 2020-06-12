@@ -14,7 +14,7 @@ const {
   generateRandomString,
   getUserByEmail,
   urlsForUser,
-  generateVisitorId
+  generateVisitorId,
 } = require('./controllers/controllers');
 const { saltRound, secretKey1, secretKey2 } = require('./secret/secret');
 
@@ -64,7 +64,7 @@ app.post('/login', (req, res) => {
 
   // user does not exist OR password is incorrect
   if (!foundUser || !hasAuthenticated) {
-    res.status(403).render('incorrectInput', { user: null });
+    res.status(409).render('page409', { user: null });
     return;
   }
 
@@ -220,7 +220,7 @@ app.get('/u/:shortURL', (req, res) => {
     }
 
     // log record of visit
-    const newLog = { visitorId: visitorId, time: new Date(Date.now()) }
+    const newLog = { visitorId: visitorId, time: new Date(Date.now()) };
     urlData.logs.push(newLog);
     res.redirect(longURL);
     return;
@@ -250,4 +250,3 @@ app.get('*', (req, res) => {
 app.listen(PORT, () => {
   console.log(`tinyapp app listening on port ${PORT}!`);
 });
-
