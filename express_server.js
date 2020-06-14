@@ -60,13 +60,20 @@ app.get('/login', (req, res) => {
 app.post('/login', (req, res) => {
   const { password, email } = req.body;
   const foundUser = getUserByEmail(email);
-  const hasAuthenticated = authenticateUser(foundUser, password);
 
-  // user does not exist OR password is incorrect
-  if (!foundUser || !hasAuthenticated) {
+  //if user does not exist
+  if (!foundUser) {
+    res.status(400).render('page401', { user: null });
+    return;
+  }
+
+  // password is incorrect
+  if (!hasAuthenticated) {
     res.status(409).render('page409', { user: null });
     return;
   }
+
+  const hasAuthenticated = authenticateUser(foundUser, password);
 
   // set session
   req.session.user_id = foundUser.id;
