@@ -63,7 +63,7 @@ app.post('/login', (req, res) => {
 
   //if user does not exist
   if (!foundUser) {
-    res.status(400).render('page400', { user: null });
+    res.status(400).render('page409', { user: null });
     return;
   }
 
